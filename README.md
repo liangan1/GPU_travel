@@ -10,7 +10,8 @@ A project to record the cuda learning process
 
 # ToDo List
 ## How to Learn the details of your GPU HW?
-- HW details 
+- HW details
+  - nvidia-smi: [nvidia-smi: Control Your GPUs](https://www.microway.com/hpc-tech-tips/nvidia-smi_control-your-gpus/)
   - Compute Capabity
     - nvidia-smi --query-gpu=compute-cap
     - queryDevice([cuda-sample](https://github.com/NVIDIA/cuda-samples/tree/master/Samples/1_Utilities/deviceQuery))
