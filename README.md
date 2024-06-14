@@ -22,7 +22,7 @@ A project to record the cuda learning process
     - Calculate the FLOPS according to the frequence, SM, core info.
        - CUDA Core FLOPS
          -  FLOPS = #CUDA_CORE * Frequency * 2(FMA)
-            - A100-80G: 6912 * 1410M * 2 = 19.49 TFLOPS
+            - A100-80G: 6912 * 1410M * 2 = 19.49 TFLOPS [Ampher Wiki](https://en.wikipedia.org/wiki/Ampere_(microarchitecture)#:~:text=The%20A100%20features%2019.5%20teraflops,s%20of%20graphics%20memory%20bandwidth.)
        - Tensor Core FLOPS
   
 ## Debug
