@@ -161,7 +161,7 @@ bool test_acc(float *A, float *B, float *C, const int M, const int N,
                "the abl:%f \n",
                i, j, diff, abl);
 
-        // return false;
+        return false;
       }
     }
   }
