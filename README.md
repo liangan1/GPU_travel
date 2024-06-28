@@ -29,6 +29,8 @@ A project to record the cuda learning process
 
 ### cuda-gdb 
 
+## OpenAI Triton 
+
 ## Profile 
 
 ### Nsight Compute 
