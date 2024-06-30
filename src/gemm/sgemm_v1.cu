@@ -33,8 +33,8 @@ __global__ void sgemm_v1(float *A, float *B, float *C, const int M, const int N,
 
   // The element used to calculate the 128*128 sub-matrix should be stored in
   // the SHM
-  __shared__ float s_a[BK][BM];
-  __shared__ float s_b[BK][BN];
+  __shared__ float s_a[2][BK][BM];
+  __shared__ float s_b[2][BK][BN];
 
   // Load elements from global memory to the shared memory
   /*
@@ -62,35 +62,67 @@ __global__ void sgemm_v1(float *A, float *B, float *C, const int M, const int N,
 
   int gemm_a_load_m = by * BM + shm_a_load_m;
   int gemm_b_load_n = bx * BN + shm_b_load_n;
+  // load the bk=0
+  int bk = 0;
 
-  for (int bk = 0; bk < (K + BK - 1) / BK; bk++) {
-    int gemm_a_load_k = bk * BK + shm_a_load_k;
-    auto gemm_a_load_offset = OFFSET(gemm_a_load_m, gemm_a_load_k, K);
-    FLOAT4(r_a) = FLOAT4(&(A[gemm_a_load_offset]));
-    s_a[shm_a_load_k][shm_a_load_m] = r_a[0];
-    s_a[shm_a_load_k + 1][shm_a_load_m] = r_a[1];
-    s_a[shm_a_load_k + 2][shm_a_load_m] = r_a[2];
-    s_a[shm_a_load_k + 3][shm_a_load_m] = r_a[3];
-    int gemm_b_load_k = bk * BK + shm_b_load_k;
-    auto gemm_b_load_offset = OFFSET(gemm_b_load_k, gemm_b_load_n, N);
-    FLOAT4(&(s_b[shm_b_load_k][shm_b_load_n])) =
-        FLOAT4(&(B[gemm_b_load_offset]));
-    __syncthreads();
+  int gemm_a_load_k = shm_a_load_k;
+  auto gemm_a_load_offset = OFFSET(gemm_a_load_m, gemm_a_load_k, K);
+  FLOAT4(r_a) = FLOAT4(&(A[gemm_a_load_offset]));
+  s_a[0][shm_a_load_k][shm_a_load_m] = r_a[0];
+  s_a[0][shm_a_load_k + 1][shm_a_load_m] = r_a[1];
+  s_a[0][shm_a_load_k + 2][shm_a_load_m] = r_a[2];
+  s_a[0][shm_a_load_k + 3][shm_a_load_m] = r_a[3];
+  int gemm_b_load_k = shm_b_load_k;
+  auto gemm_b_load_offset = OFFSET(gemm_b_load_k, gemm_b_load_n, N);
+  FLOAT4(&(s_b[0][shm_b_load_k][shm_b_load_n])) =
+      FLOAT4(&(B[gemm_b_load_offset]));
+  __syncthreads();
 
+  int shm_index = 0;
+  for (bk = 1; bk < (K + BK - 1) / BK; bk++) {
+    shm_index = (bk - 1) & 1;
     // calculate the C(TM, TN)
     for (int k = 0; k < BK; k++) {
-      FLOAT4(&r_c_a[0]) = FLOAT4(&s_a[k][ty * TM / 2]);
-      FLOAT4(&r_c_a[4]) = FLOAT4(&s_a[k][ty * TM / 2 + BM / 2]);
-      FLOAT4(&r_c_b[0]) = FLOAT4(&s_b[k][tx * TN / 2]);
-      FLOAT4(&r_c_b[4]) = FLOAT4(&s_b[k][tx * TN / 2 + BN / 2]);
+      FLOAT4(&r_c_a[0]) = FLOAT4(&s_a[shm_index][k][ty * TM / 2]);
+      FLOAT4(&r_c_a[4]) = FLOAT4(&s_a[shm_index][k][ty * TM / 2 + BM / 2]);
+      FLOAT4(&r_c_b[0]) = FLOAT4(&s_b[shm_index][k][tx * TN / 2]);
+      FLOAT4(&r_c_b[4]) = FLOAT4(&s_b[shm_index][k][tx * TN / 2 + BN / 2]);
       for (int i = 0; i < TM; i++) {
         for (int j = 0; j < TN; j++) {
           c_r[i][j] += r_c_a[i] * r_c_b[j];
         }
       }
     }
+    int shm_load_index = bk & 1;
+
+    int gemm_a_load_k = bk * BK + shm_a_load_k;
+    auto gemm_a_load_offset = OFFSET(gemm_a_load_m, gemm_a_load_k, K);
+    FLOAT4(r_a) = FLOAT4(&(A[gemm_a_load_offset]));
+    s_a[shm_load_index][shm_a_load_k][shm_a_load_m] = r_a[0];
+    s_a[shm_load_index][shm_a_load_k + 1][shm_a_load_m] = r_a[1];
+    s_a[shm_load_index][shm_a_load_k + 2][shm_a_load_m] = r_a[2];
+    s_a[shm_load_index][shm_a_load_k + 3][shm_a_load_m] = r_a[3];
+    int gemm_b_load_k = bk * BK + shm_b_load_k;
+    auto gemm_b_load_offset = OFFSET(gemm_b_load_k, gemm_b_load_n, N);
+    FLOAT4(&(s_b[shm_load_index][shm_b_load_k][shm_b_load_n])) =
+        FLOAT4(&(B[gemm_b_load_offset]));
     __syncthreads();
   }
+
+  // calculate the last bk
+  shm_index = (bk - 1) & 1;
+  for (int k = 0; k < BK; k++) {
+    FLOAT4(&r_c_a[0]) = FLOAT4(&s_a[shm_index][k][ty * TM / 2]);
+    FLOAT4(&r_c_a[4]) = FLOAT4(&s_a[shm_index][k][ty * TM / 2 + BM / 2]);
+    FLOAT4(&r_c_b[0]) = FLOAT4(&s_b[shm_index][k][tx * TN / 2]);
+    FLOAT4(&r_c_b[4]) = FLOAT4(&s_b[shm_index][k][tx * TN / 2 + BN / 2]);
+    for (int i = 0; i < TM; i++) {
+      for (int j = 0; j < TN; j++) {
+        c_r[i][j] += r_c_a[i] * r_c_b[j];
+      }
+    }
+  }
+  __syncthreads();
 
   // store the c_r result into the global memory
   for (int i = 0; i < TM / 2; i++) {
@@ -216,7 +248,7 @@ float testPerformance(void (*gpuSgemm)(float *, float *, float *, const int,
 
 void test_performance() {
   printf("\nKernal = sgemm_V1\n");
-  const int outer_repeat = 10, inner_repeat = 1;
+  const int outer_repeat = 1, inner_repeat = 1;
   const int BM = 128, BN = 128, TM = 8, TN = 8;
   void (*gpuSgemm)(float *, float *, float *, const int, const int, const int) =
       sgemm_v1;
@@ -257,6 +289,19 @@ void test_performance() {
 }
 
 int main() {
+  cudaDeviceProp prop;
+  int device;
+
+  // Get the default CUDA device
+  cudaGetDevice(&device);
+  cudaGetDeviceProperties(&prop, device);
+
+  // Print the available shared memory per block (SM)
+  std::cout << "Available shared memory per block: " << prop.sharedMemPerBlock
+            << " bytes" << std::endl;
+  // Print the number of 32-bit registers available per block
+  std::cout << "Available 32-bit registers per block: " << prop.regsPerBlock
+            << std::endl;
   float *A, *B, *C;
   int M = 512, N = 512, K = 512;
   auto size_a = M * K * sizeof(float);
