@@ -6,5 +6,6 @@
 bandwidth.
 - Second-Generation NVIDIA NVLink™ , six NVLink links and total bandwidth of 300 GB/sec
 - The tensor core process 4x4x4 MM.  At the CUDA level, the warp-level interface assumes 16x16 size matrices spanning all 32 threads of the warp? how these data mapped to the tensor core and thread?
-  
+## Roofline model 
+https://www.nersc.gov/assets/Uploads/Tutorial-ISC2018-Roofline-Model.pdf
 
