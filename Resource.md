@@ -9,3 +9,6 @@ bandwidth.
 ## Roofline model 
 https://www.nersc.gov/assets/Uploads/Tutorial-ISC2018-Roofline-Model.pdf
 
+## ISPC history 
+[The story of ispc: all the links](https://pharr.org/matt/blog/2018/04/30/ispc-all)
+
