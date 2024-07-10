@@ -27,3 +27,11 @@ GPU 是面向吞吐设计的。拥有更多的活跃 warp 可以隐藏那些
 
 ### 如何计算 occupancy
 ### 参考文献   
+
+## 3. 如何从并行编程的角度理解CPU和GPU的相同之处？
+### 不同的并行编程模型
+- SPMD
+- SIMD
+- SIMT 
+- MIMD
+SMID lane 其实就是一个 warp lane， 以 AVX512 为例，一条指令有 16个 SIMD lane, 每个 SIMD lane处理 32bits的数据， 而 GPU 中， 每个warp有32个threads，即32个warp lane， 每个lane也是处理32bits的数据（1 个寄存器的宽度）。 那么对于 tensor core和 AMX 应该如何理解呢？ 在 GPU 中，wmma是一个warp function，即warp中的所有线程合作完成一条warp指令，这条warp指令在volta 架构中可以处理 16*16*16 的数据。
