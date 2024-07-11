@@ -33,6 +33,9 @@ bandwidth.
   - Acceleration for all data types including FP16, BF16, TF32, FP64, INT8, INT4 and Binary
     <img width="679" alt="image" src="https://github.com/liangan1/cuda_travel/assets/46986936/0ba573f1-6b6e-40ad-9827-a72fb167d906">
   - How about the programing model comapred to the V100, still process 16x16x16?
+  - How to understand the folloiwng Fig.14 in the A100 white paper? It seems that if we can understand this table correctly we already underdant the SIMT mode and Tensor Core implementation.
+    <img width="645" alt="image" src="https://github.com/liangan1/cuda_travel/assets/46986936/f5e17c1a-b7f2-4073-bbec-78ce620ba163">
+
   
 
 
