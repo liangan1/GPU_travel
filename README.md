@@ -5,7 +5,7 @@ A project to record the GPU(CUDA/Sycl) learning process
 |   TimeLine |Task  |Goal| Status
 | -----------| ------------- |-----------| ------------- |
 |2024.Q2     |CUDA Programing Guide &CUDA-GDB| 1. Key concept of  CUDA(Runtime, Hardware Architecture, Performance Guideline) 2.CUDA-GDB for matmul kernel | Done |
-|2024.Q3     |LLM kernels & NVSight | 1.Understand and program for layerNorm, Softmax & PagedAttention 2.Familiar with NVSight to breakdown the HW resources analysis 
+|2024.Q3     |LLM kernels & NVSight | 1.Understand and program for layerNorm, Softmax & PagedAttention 2.Familiar with NVSight to breakdown the HW resources analysis |1 done, 2 not yet, NVSight is not available in my machine|
 |2024.Q4     | TensorRT & Vllm  based on CUDA|1. Familiar with the usage of tensorRT and VLLM based on A100-80G  2.Analysis the HW utilization of Llama based on the above inference engine
 
 ## What I have done?
