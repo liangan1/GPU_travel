@@ -1,5 +1,5 @@
-# cuda_travel
-A project to record the cuda learning process
+# GPU Travel
+A project to record the GPU(CUDA/Sycl) learning process
 
 # Leanrning ROADMAP 
 |   TimeLine |Task  |Goal| Status
