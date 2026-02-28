@@ -2,7 +2,9 @@
 This file is used to describe the performance of Flash-Attention V2 on the SM80. The code base of CUDA is based on the https://github.com/Dao-AILab/flash-attention/tree/main
 
 ## Benchmark Result (TFLOPs/s & ms）
-The peak frequency is 1410MHZ and it will drop to ~1200MHZ, so the peak TFLOPs of A100 should be ~265TFLOPs/s when runing the FAV2.  when we disable the softmax in SDPA, the GEMM efficiency should be ~83%(220/265), while the efficiency drop to 68% w/ softmax.
+The peak frequency is 1410MHZ and it will drop to ~1200MHZ, so the peak TFLOPs of A100 should be ~265TFLOPs/s when runing the FAV2. 
+For non-causal, when we disable the softmax in SDPA, the GEMM efficiency should be ~83%(220/265), while the efficiency drop to 68% w/ softmax.
+For causal, the efficiency is 37%~60%. 
 | bs | seqlen_q | seqlen_kv | kv_heads | Baseline TFLOPs/s | Baseline ms | Barrier TFLOPs/s | Barrier ms | No softmax TFLOPs/s | No softmax ms |
 |---:|---------:|----------:|---------:|-----------------:|------------:|-----------------:|-----------:|--------------------:|--------------:|
 | 16 | 1024 | 1024 | 32 | 177.67 | 1.547 | 178.30 | 1.542 | 217.51 | 1.264 |
