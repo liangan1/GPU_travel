@@ -4,7 +4,7 @@ This file is used to describe the performance of Flash-Attention V2 on the SM80.
 ## Benchmark Result (TFLOPs/s & ms）
 The peak frequency is 1410MHZ and it will drop to ~1200MHZ, so the peak TFLOPs of A100 should be ~265TFLOPs/s when runing the FAV2. 
 For non-causal, when we disable the softmax in SDPA, the GEMM efficiency should be ~83%(220/265), while the efficiency drop to 68% w/ softmax.
-For causal, the efficiency is 37%~60%. 
+For causal, the efficiency is 52.8%~66%. 
 | bs | seqlen_q | seqlen_kv | kv_heads | Baseline TFLOPs/s | Baseline ms | Barrier TFLOPs/s | Barrier ms | No softmax TFLOPs/s | No softmax ms |
 |---:|---------:|----------:|---------:|-----------------:|------------:|-----------------:|-----------:|--------------------:|--------------:|
 | 16 | 1024 | 1024 | 32 | 177.67 | 1.547 | 178.30 | 1.542 | 217.51 | 1.264 |
@@ -20,8 +20,8 @@ For causal, the efficiency is 37%~60%.
 |:------:|---:|---------:|----------:|---------:|---------:|----------:|
 | True  | 16 | 1024 | 1024 | 32 | 143.70 | 0.956 |
 | True  | 16 | 1024 | 1024 | 8  | 140.59 | 0.978 |
-| True  | 4  | 1024 | 4096 | 32 | 98.10  | 1.401 |
-| True  | 4  | 1024 | 4096 | 8  | 99.84  | 1.377 |
+| True  | 4  | 1024 | 4096 | 32 | 171  | 1.401 |
+| True  | 4  | 1024 | 4096 | 8  | 174.7  | 1.377 |
 | True  | 1  | 4096 | 4096 | 32 | 156.27 | 0.879 |
 | True  | 1  | 4096 | 4096 | 8  | 159.41 | 0.862 |
 | False | 16 | 1024 | 1024 | 32 | 179.11 | 1.535 |
